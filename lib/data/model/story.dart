@@ -1,4 +1,4 @@
-class StoryResult {
+class Story{
   String? id;
   String? name;
   String? description;
@@ -7,7 +7,7 @@ class StoryResult {
   double? lat;
   double? lon;
 
-  StoryResult(
+  Story(
       {this.id,
         this.name,
         this.description,
@@ -16,7 +16,7 @@ class StoryResult {
         this.lat,
         this.lon});
 
-  StoryResult.fromJson(Map<String, dynamic> json) {
+  Story.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     description = json['description'];

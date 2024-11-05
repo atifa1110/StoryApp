@@ -1,9 +1,9 @@
-class LoginResult {
+class Login {
   String? userId;
   String? name;
   String? token;
 
-  LoginResult.fromJson(Map<String, dynamic> json) {
+  Login.fromJson(Map<String, dynamic> json) {
     userId = json['userId'];
     name = json['name'];
     token = json['token'];

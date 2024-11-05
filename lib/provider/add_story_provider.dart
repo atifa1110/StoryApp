@@ -1,7 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:story_submission_1/data/preferences/preferences_helper.dart';
+import 'package:story_submission_1/page/add_story_screen.dart';
+import 'package:story_submission_1/routing/app_routes.dart';
 
 import '../data/api/api_service.dart';
 import '../data/enum/state.dart';
@@ -19,30 +23,51 @@ class AddStoryProvider extends ChangeNotifier {
   String _message = "";
   String get message => _message;
 
-  Future<dynamic> addStory(AddStoryRequest story) async {
+  final TextEditingController descriptionController = TextEditingController();
+
+  File? _selectedImage;
+  File? get selectedImage => _selectedImage;
+
+  Future<void> selectImage() async {
+    final imagePicker = ImagePicker();
+    final pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
+
+    if (pickedImage != null) {
+      _selectedImage = File(pickedImage.path);
+      notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    descriptionController.dispose();
+    super.dispose();
+  }
+
+  Future<dynamic> addStory(BuildContext context) async {
     String token = await preferencesHelper.getToken;
+    final request = AddStoryRequest(description: descriptionController.text, photo: selectedImage?? File(""));
     try {
       _state = ResultState.loading;
       notifyListeners();
 
-      final detailStoryResult = await apiService.addStory(story, token);
+      final detailStoryResult = await apiService.addStory(request,token);
 
       if (detailStoryResult.error == true) {
         _state = ResultState.error;
-
         _message = detailStoryResult.message ?? "Error when uploading!";
       } else {
         _state = ResultState.hasData;
-
         _message = detailStoryResult.message ?? "Success upload story!";
+        if (context.mounted) {
+          context.goNamed(Routes.home.name);
+        }
       }
     } on SocketException {
       _state = ResultState.error;
-
       _message = "Error: No Internet Connection";
     } catch (e) {
       _state = ResultState.error;
-
       _message = "Error: $e";
     } finally {
       notifyListeners();

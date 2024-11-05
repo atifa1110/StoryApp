@@ -3,7 +3,7 @@ import '../model/login.dart';
 class LoginResponse {
   bool? error;
   String? message;
-  LoginResult? loginResult;
+  Login? loginResult;
 
   LoginResponse({this.error, this.message, this.loginResult});
 
@@ -11,7 +11,7 @@ class LoginResponse {
     error = json['error'];
     message = json['message'];
     loginResult = json['loginResult'] != null
-        ? LoginResult.fromJson(json['loginResult'])
+        ? Login.fromJson(json['loginResult'])
         : null;
   }
 

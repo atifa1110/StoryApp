@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:story_submission_1/page/add_story_screen.dart';
 import 'package:story_submission_1/page/detail_story_screen.dart';
 import 'package:story_submission_1/page/login_screen.dart';
 import 'package:story_submission_1/page/story_list_screen.dart';
@@ -77,6 +78,18 @@ final goRouter = GoRouter(
                   DetailStoryScreen(
                     storyId: storyId, isBackButtonShow: true
                   )
+                );
+              },
+            ),
+            GoRoute(
+              path: 'addStory',
+              parentNavigatorKey: _rootNavigatorKey,
+              name: Routes.addStory.name,
+              pageBuilder: (context, state) {
+                return _navigate(
+                    context,
+                    state,
+                    const AddStoryScreen()
                 );
               },
             ),

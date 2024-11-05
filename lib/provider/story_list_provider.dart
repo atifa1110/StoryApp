@@ -1,11 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:story_submission_1/data/model/story.dart';
 import 'package:story_submission_1/data/preferences/preferences_helper.dart';
+import 'package:story_submission_1/page/login_screen.dart';
 
 import '../data/api/api_service.dart';
 import '../data/enum/state.dart';
+import '../routing/app_routes.dart';
 
 class StoryListProvider extends ChangeNotifier {
   final ApiService apiService;
@@ -27,10 +30,36 @@ class StoryListProvider extends ChangeNotifier {
   String _message = "";
   String get message => _message;
 
-  final List<StoryResult> _stories = [];
-  List<StoryResult> get stories => _stories;
+  final List<Story> _stories = [];
+  List<Story> get stories => _stories;
   ScrollController get scrollController => _scrollController;
   bool get isScrollLoading => _isScrollLoading;
+
+  Future<void> logout(BuildContext context) async {
+    // Set the token to an empty string and isLogin to false
+    preferencesHelper.setToken("");
+    preferencesHelper.setLogin(false);
+
+    // Check the login status after updating preferences
+    bool res = await preferencesHelper.isLogin;
+
+    if (!res) { // If isLogin is false, logout was successful
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Logout Success")),
+        );
+        // Navigate to the login screen and clear the navigation stack
+        context.goNamed(Routes.login.name);
+      }
+    } else { // If isLogin is true, logout failed
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Logout Failed")),
+        );
+      }
+    }
+  }
+
 
   Future<dynamic> _getStories() async {
     String token = await preferencesHelper.getToken;
@@ -62,11 +91,9 @@ class StoryListProvider extends ChangeNotifier {
       }
     } on SocketException {
       _state = ResultState.error;
-
       _message = "Error: No Internet Connection";
     } catch (e) {
       _state = ResultState.error;
-
       _message = "Error: $e";
     } finally {
       notifyListeners();

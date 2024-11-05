@@ -26,57 +26,40 @@ class ApiService {
       body: json.encode(
         request.toJson(),
       ),
-    ).timeout(timeout);
+    );
 
-    switch (response.statusCode) {
-      case 200:
-        return LoginResponse.fromJson(json.decode(response.body));
-      case 400:
-        throw Exception('Bad Request: The server could not understand the request.');
-      case 404:
-        throw Exception('Not Found: login with the given ID was not found.');
-      case 500:
-        throw Exception('Internal Server Error: Something went wrong on the server.');
-      default:
-        throw Exception('Failed to login');
+    var login = LoginResponse.fromJson(json.decode(response.body));
+
+    if(response.statusCode == 200){
+      return login;
+    }else{
+      throw Exception(login.message);
     }
   }
 
   Future<BaseResponse> register(RegisterRequest request) async {
     final response = await http.post(
       _registerEndpoint,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      headers: {'Content-Type': 'application/json'},
       body: json.encode(
         request.toJson(),
       ),
-    ).timeout(timeout);
+    );
 
-    switch (response.statusCode) {
-      case 201:
-        return BaseResponse.fromJson(json.decode(response.body));
-      case 400:
-        throw Exception('Bad Request: The server could not understand the request.');
-      case 404:
-        throw Exception('Not Found: register with the given ID was not found.');
-      case 500:
-        throw Exception('Internal Server Error: Something went wrong on the server.');
-      default:
-        throw Exception('Failed to register');
+    var register = BaseResponse.fromJson(json.decode(response.body));
+
+    if(response.statusCode == 201){
+      return register;
+    }else{
+      throw Exception(register.message);
     }
   }
 
   Future<StoriesResponse> getStories(String token) async {
-    // var tokenPref = Token();
-    // var token = await tokenPref.getToken();
-
     final response = await http.get(
         _storiesEndpoint,
-        headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $token',
-        }
+        headers: { 'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $token'}
     ).timeout(timeout);
 
    switch (response.statusCode) {
@@ -94,9 +77,6 @@ class ApiService {
   }
 
   Future<DetailStoryResponse> getDetailStory(String id, String token) async {
-    // var tokenPref = Token();
-    // var token = await tokenPref.getToken();
-
     final response = await http.get(_detailStoryEndpoint(id), headers: {
       'Authorization': 'Bearer $token',
     }).timeout(timeout);
@@ -118,7 +98,6 @@ class ApiService {
   }
 
   Future<BaseResponse> addStory(AddStoryRequest story, String token) async {
-
     final request = http.MultipartRequest('POST', _storiesEndpoint);
     request.headers['Authorization'] = 'Bearer $token';
     request.fields['description'] = story.description;
@@ -134,14 +113,13 @@ class ApiService {
     }
 
     final response = await request.send().timeout(timeout);
-
-    if (_isResponseSuccess(response.statusCode)) {
-      String responseBody = await response.stream.bytesToString();
-      return BaseResponse.fromJson(json.decode(responseBody));
-    } else {
-      throw Exception("${response.statusCode} - Error when upload story");
+    String responseBody = await response.stream.bytesToString();
+    final storyResponse = BaseResponse.fromJson(json.decode(responseBody));
+    if(response.statusCode == 201){
+      return storyResponse;
+    }else{
+      throw Exception(storyResponse.message);
     }
   }
 
-  _isResponseSuccess(int statusCode) => (statusCode >= 200 && statusCode < 300);
 }

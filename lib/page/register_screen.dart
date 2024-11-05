@@ -2,21 +2,18 @@ import 'dart:ui';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:story_submission_1/provider/register_provider.dart';
 import '../common/app_theme.dart';
 import '../common/show_toast.dart';
 import '../data/api/api_service.dart';
 import '../data/enum/state.dart';
+import '../routing/app_routes.dart';
 
 class RegisterScreen extends StatefulWidget {
-  //final VoidCallback onLoginSuccess;
-  //final VoidCallback onRegisterClicked;
-
   const RegisterScreen({
     super.key,
-    //required this.onLoginSuccess,
-    //required this.onRegisterClicked
   });
 
   @override
@@ -157,7 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                   onPressed: () {
                                     if (_formKey.currentState?.validate() == true) {
-                                      provider.register();
+                                      provider.register(context);
                                     }
                                   },
                                   child: Row(
@@ -192,7 +189,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         style: AppThemes.text1.copyWith(color: Colors.blue),
                                         recognizer: TapGestureRecognizer()
                                           ..onTap = () {
-                                            print("Navigate to Login Page");
+                                            context.goNamed(
+                                              Routes.login.name,
+                                            );
                                           },
                                       ),
                                     ],

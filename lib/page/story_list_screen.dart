@@ -8,10 +8,12 @@ import 'package:story_submission_1/page/login_screen.dart';
 import 'package:story_submission_1/provider/story_list_provider.dart';
 import 'package:story_submission_1/routing/app_routes.dart';
 
+import '../component/lottie_widget.dart';
 import '../data/api/api_service.dart';
 import '../data/enum/state.dart';
 import '../routing/extras.dart';
 import '../routing/key.dart';
+import '../theme/resources.dart';
 
 class StoryListScreen extends StatelessWidget {
 
@@ -28,26 +30,30 @@ class StoryListScreen extends StatelessWidget {
           automaticallyImplyLeading: false,
           title: const Text("Story App"),
           actions: [
-            PopupMenuButton<String>(
-              onSelected: (value) {
-                // Handle menu selection
-                if (value == 'Profile') {
-                  // Navigate to profile page or perform action
-                } else if (value == 'Settings') {
-                  // Navigate to settings page or perform action
-                } else if (value == 'Logout') {
-                  // Handle logout action
-                }
-              },
-              itemBuilder: (BuildContext context) {
-                return {'Profile', 'Settings', 'Logout'}.map((String choice) {
-                  return PopupMenuItem<String>(
-                    value: choice,
-                    child: Text(choice),
+            Consumer<StoryListProvider>(
+                builder: (context, provider, child) {
+                  return PopupMenuButton<String>(
+                    onSelected: (value) {
+                      // Handle menu selection
+                      if (value == 'Profile') {
+                        // Navigate to profile page or perform action
+                      } else if (value == 'Settings') {
+                        // Navigate to settings page or perform action
+                      } else if (value == 'Logout') {
+                        provider.logout(context);
+                      }
+                    },
+                    itemBuilder: (BuildContext context) {
+                      return {'Profile', 'Settings', 'Logout'}.map((String choice) {
+                        return PopupMenuItem<String>(
+                          value: choice,
+                          child: Text(choice),
+                        );
+                      }).toList();
+                    },
                   );
-                }).toList();
-              },
-            ),
+                }
+            )
           ],
         ),
         floatingActionButton: Consumer<StoryListProvider>(
@@ -55,7 +61,7 @@ class StoryListScreen extends StatelessWidget {
             return FloatingActionButton(
               onPressed: () async {
                 await context.pushNamed(Routes.addStory.name);
-                //value.refreshData();
+                value.refreshData();
               },
               child: const Icon(
                 Icons.add,
@@ -65,7 +71,12 @@ class StoryListScreen extends StatelessWidget {
         ),
         body: Consumer<StoryListProvider>(
           builder: (context, value, child) {
-            if (value.state == ResultState.hasData) {
+            if (value.state == ResultState.loading) {
+              return const Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            } else if (value.state == ResultState.hasData) {
               return Padding(
                 padding: const EdgeInsets.all(20),
                 child: Stack(
@@ -88,7 +99,6 @@ class StoryListScreen extends StatelessWidget {
                             ),
                             child: InkWell(
                               onTap: () {
-                                //context.push("/detail/${data.id}");
                                 context.pushNamed(
                                   Routes.detailStory.name,
                                   extra: Extras(
@@ -176,20 +186,26 @@ class StoryListScreen extends StatelessWidget {
                   ],
                 ),
               );
-            } else if (value.state == ResultState.loading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
             } else if (value.state == ResultState.noData) {
-              return const Center(
-                child: Text("Nothing Found"),
+              return LottieWidget(
+                assets: Resources.lottieEmpty,
+                description: 'No Result',
+                subtitle: value.message,
+              );
+            } else if (value.state == ResultState.error) {
+              return LottieWidget(
+                assets: Resources.lottieEmpty,
+                description: 'No Result',
+                subtitle: value.message,
               );
             } else {
               return const Center(
-                child: Text("Nothing Found"),
+                child: Material(
+                  child: Text('Unexpected Error'),
+                ),
               );
             }
-          },
+          }
         ),
       ),
     );

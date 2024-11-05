@@ -3,14 +3,14 @@ import '../model/story.dart';
 class DetailStoryResponse {
   bool? error;
   String? message;
-  StoryResult? story;
+  Story? story;
 
   DetailStoryResponse({this.error, this.message, this.story});
 
   DetailStoryResponse.fromJson(Map<String, dynamic> json) {
     error = json['error'];
     message = json['message'];
-    story = json['story'] != null ? StoryResult.fromJson(json['story']) : null;
+    story = json['story'] != null ? Story.fromJson(json['story']) : null;
   }
 
   Map<String, dynamic> toJson() {

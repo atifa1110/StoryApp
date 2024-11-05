@@ -58,7 +58,7 @@ class LoginProvider extends ChangeNotifier {
         preferencesHelper.setLogin(true);
         _loginMessage = loginResult.message ?? "Login Success!";
         if (context.mounted) {
-          context.pushNamed(Routes.home.name);
+          context.goNamed(Routes.home.name);
         }
       } else {
         _loginState = ResultState.noData;

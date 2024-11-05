@@ -178,7 +178,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                             recognizer: TapGestureRecognizer()
                                               ..onTap = () {
                                                 // Handle the "Register" tap action
-                                                print("Navigate to Register Page");
                                                 context.pushNamed(
                                                   Routes.register.name,
                                                 );
@@ -206,7 +205,6 @@ class _LoginScreenState extends State<LoginScreen> {
     switch (provider.loginState) {
       case ResultState.hasData:
         showToast(provider.loginMessage);
-        //afterBuildWidgetCallback(widget.onLoginSuccess);
         break;
       case ResultState.noData:
         showToast(provider.loginMessage);

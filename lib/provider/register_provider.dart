@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../data/api/api_service.dart';
 import '../data/enum/state.dart';
 import '../data/request/register_request.dart';
+import '../routing/app_routes.dart';
 
 class RegisterProvider extends ChangeNotifier {
   final ApiService apiService;
@@ -40,7 +42,7 @@ class RegisterProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<dynamic> register() async {
+  Future<dynamic> register(BuildContext context) async {
     final request = RegisterRequest(
       name: _nameController.text,
       email: _emailController.text,
@@ -51,10 +53,12 @@ class RegisterProvider extends ChangeNotifier {
       _registerState = ResultState.loading;
       notifyListeners();
       final registerResult = await apiService.register(request);
-      print(registerResult);
       if (registerResult.error != true) {
         _registerState = ResultState.hasData;
         _registerMessage = registerResult.message ?? "Account Created!";
+        if (context.mounted) {
+          context.goNamed(Routes.login.name);
+        }
       } else {
         _registerState = ResultState.noData;
         _registerMessage = registerResult.message ?? "Register Failed";

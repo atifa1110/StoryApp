@@ -3,7 +3,7 @@ import '../model/story.dart';
 class StoriesResponse{
   bool? error;
   String? message;
-  List<StoryResult>? listStory;
+  List<Story>? listStory;
 
   StoriesResponse({this.error, this.message, this.listStory});
 
@@ -11,9 +11,9 @@ class StoriesResponse{
     error = json['error'];
     message = json['message'];
     if (json['listStory'] != null) {
-      listStory = <StoryResult>[];
+      listStory = <Story>[];
       json['listStory'].forEach((v) {
-        listStory!.add(StoryResult.fromJson(v));
+        listStory!.add(Story.fromJson(v));
       });
     }
   }

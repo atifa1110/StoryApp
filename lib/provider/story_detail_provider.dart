@@ -19,8 +19,8 @@ class DetailStoryProvider extends ChangeNotifier {
   ResultState? _state;
   ResultState? get state => _state;
 
-  StoryResult _story = StoryResult();
-  StoryResult get story => _story;
+  Story _story = Story();
+  Story get story => _story;
 
   String _message = "";
   String get message => _message;
@@ -33,7 +33,7 @@ class DetailStoryProvider extends ChangeNotifier {
       final detailStoryResult = await apiService.getDetailStory(id, token);
       if (detailStoryResult.story != null) {
         _state = ResultState.hasData;
-        _story = detailStoryResult.story ?? StoryResult();
+        _story = detailStoryResult.story ?? Story();
         _message = detailStoryResult.message ?? "Get Detail Story Success!";
       } else {
         _state = ResultState.noData;
@@ -48,5 +48,9 @@ class DetailStoryProvider extends ChangeNotifier {
     } finally {
       notifyListeners();
     }
+  }
+
+  void refresh(String id) {
+    getDetailStory(id);
   }
 }
